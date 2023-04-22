@@ -1,68 +1,107 @@
-import 'package:flutter/material.dart';  
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';  
   
 void main() => runApp(MyApp());  
-  
-class MyApp extends StatelessWidget {  
-  @override  
-  Widget build(BuildContext context) {  
-    return MaterialApp(  
-        home: Scaffold(  
-            appBar: AppBar(  
-              backgroundColor: Colors.blue,  
-              title: Text("Flutter Switch Example"),  
-            ),  
-            body: Center(  
-                  child: SwitchScreen()  
-            ),  
-        )  
-    );  
-  }  
-}  
-  
-class SwitchScreen extends StatefulWidget {  
-  @override  
-  SwitchClass createState() => new SwitchClass();  
-}  
-  
-class SwitchClass extends State {  
-  bool isSwitched = false;  
-  var textValue = 'Switch is OFF';  
-  
-  void toggleSwitch(bool value) {  
-  
-    if(isSwitched == false)  
-    {  
-      setState(() {  
-        isSwitched = true;  
-        textValue = 'Switch Button is ON';  
-      });  
-      print('Switch Button is ON');  
-    }  
-    else  
-    {  
-      setState(() {  
-        isSwitched = false;  
-        textValue = 'Switch Button is OFF';  
-      });  
-      print('Switch Button is OFF');  
-    }  
-  }  
-  @override  
-  Widget build(BuildContext context) {  
-    return Column(  
-        mainAxisAlignment: MainAxisAlignment.center,  
-        children:[ Transform.scale(  
-            scale: 2,  
-            child: Switch(  
-              onChanged: toggleSwitch,  
-              value: isSwitched,  
-              activeColor: Colors.blue,  
-              activeTrackColor: Colors.yellow,  
-              inactiveThumbColor: Colors.redAccent,  
-              inactiveTrackColor: Colors.orange,  
-            )  
-          ),  
-          Text('$textValue', style: TextStyle(fontSize: 20),)  
-        ]);  
-  }  
-}  
+
+class SwitchModel extends ChangeNotifier {
+  bool _value = false;
+
+  bool get value => _value;
+
+  set value(bool newValue) {
+    _value = newValue;
+    notifyListeners();
+  }
+}
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (context) => SwitchModel(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primaryColor: Color.fromARGB(255, 125, 59, 75),
+        ),
+        home: MyHomePage(),
+      ),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _selectedIndex = 0;
+
+  List<Widget> _widgetOptions = <Widget>[MySwitch(), BluetoothPage()];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('App Title'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: _widgetOptions.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).primaryColor,
+        items: const [
+          BottomNavigationBarItem(label: 'Switch', icon: Icon(Icons.home)),
+          BottomNavigationBarItem(
+              label: 'Bluetooth', icon: Icon(Icons.settings)),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class MySwitch extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final switchModel = Provider.of<SwitchModel>(context);
+    return Container(
+      alignment: Alignment.center,
+      child: Column (
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Switch(
+            value: switchModel.value,
+            onChanged: (bool value) {
+              switchModel.value = value;
+            },
+            activeColor: Theme.of(context).primaryColor,
+          ),
+          const SizedBox(height: 16.0),
+          Text(
+            switchModel.value ? 'Switch is on' : 'Switch is off',
+            style: TextStyle(fontSize: 24.0),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class BluetoothPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        'Bluetooth Settings',
+        style: TextStyle(fontSize: 24.0),
+      ),
+    );
+  }
+}
