@@ -4,7 +4,7 @@ class SocketIOClient {
   late IO.Socket socket;
 
   SocketIOClient() {
-    socket = IO.io('http://localhost:3000', <String, dynamic>{
+    socket = IO.io('https://distinctwarlikerefactoring.caseytran4.repl.co/', <String, dynamic>{
       'transports': ['websocket'],
       'autoConnect': false,
     });

@@ -25,4 +25,4 @@ def receive_data(data):
     switch = data
 
 # connect to the server 
-sio.connect('http://localhost:3000')
+sio.connect('https://distinctwarlikerefactoring.caseytran4.repl.co/')

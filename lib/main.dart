@@ -63,7 +63,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  IO.Socket socket = IO.io('http://192.168.50.1:3000', <String, dynamic>{'transports': ['websocket'], 'forceNew': true});
+  IO.Socket socket = IO.io('https://distinctwarlikerefactoring.caseytran4.repl.co', <String, dynamic>{'transports': ['websocket'], 'forceNew': true});
 
   @override
   void dispose() {
