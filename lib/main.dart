@@ -3,9 +3,32 @@ import 'package:get/get.dart';
 import 'package:la_hacks/bluetooth_controller/bluetooth_controller.dart';
 import 'package:provider/provider.dart';  
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-  
-void main() => runApp(MyApp());  
+import 'package:la_hacks/socket_client/client.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+//void main() => runApp(MyApp());  
+
+void main() {
+  // initialzie the socketioclient instance
+  IO.Socket socket = IO.io('http://192.168.50.1:3000', <String, dynamic>{'transports': ['websocket'], 'forceNew': true});
+  socket.connect();
+
+  socket.on("connect_error", (err) {
+    print("ERROR IN CONNECTING: $err");
+  });
+  
+  
+  socket.on('Message', (data) {
+    print('Received message: $data');
+  });
+
+  socket.emit('Message', {'data': 'hello'});
+
+  //SocketIOClient client = SocketIOClient();
+  //client.connectToServer();
+
+  runApp(MyApp());
+}
 class SwitchModel extends ChangeNotifier {
   bool _value = false;
 

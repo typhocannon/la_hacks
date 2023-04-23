@@ -1,10 +1,16 @@
 import * as http from 'http';
 import {Server as SocketIOServer, Socket } from 'socket.io';
 import express from 'express';
+import { Request, Response } from 'express';
 
 const app = express();
 const server = http.createServer(app);
-const ioServer = new SocketIOServer(server);
+const ioServer = new SocketIOServer(server, { cors: {origin: "*"}});
+
+app.get('/', (req: Request, res: Response) => {
+  res.send(`health check -- ${process.env.BUILD_ENV}`)
+})
+
 
 ioServer.on('connection', (socket: Socket) => {
   console.log('A user connected');
