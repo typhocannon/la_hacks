@@ -13,14 +13,17 @@ app.get('/', (req: Request, res: Response) => {
 
 
 ioServer.on('connection', (socket: Socket) => {
-  console.log('A user connected');
+  console.log('A user connected with id ' + socket.id);
+  
+  socket.on('switch', (Status: boolean) => {
+    console.log("New switch:", Status);
+    ioServer.emit("Status: ", Status);
+  })
 });
 
 const PORT = process.env.PORT || 3000;
+
 server.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
 
-ioServer.on('Switch', (Status: boolean) => {
-    ioServer.emit("Status: ", Status);
-})

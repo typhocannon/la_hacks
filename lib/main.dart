@@ -22,13 +22,13 @@ void main() {
     print('Received message: $data');
   });
 
-  socket.emit('Message', {'data': 'hello'});
 
   //SocketIOClient client = SocketIOClient();
   //client.connectToServer();
 
   runApp(MyApp());
 }
+
 class SwitchModel extends ChangeNotifier {
   bool _value = false;
 
@@ -63,7 +63,14 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedIndex = 0;
 
-  List<Widget> _widgetOptions = <Widget>[MySwitch(), BluetoothPage()];
+  IO.Socket socket = IO.io('http://192.168.50.1:3000', <String, dynamic>{'transports': ['websocket'], 'forceNew': true});
+
+  @override
+  void dispose() {
+    socket.disconnect();
+    socket.dispose();
+    super.dispose();
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -75,10 +82,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('App Title'),
+        title: const Text('BlockStalk'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: _widgetOptions.elementAt(_selectedIndex),
+      // body: _widgetOptions.elementAt(_selectedIndex),
+      body: <Widget>[SwitchState(socket), BluetoothPage()].elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).primaryColor,
         items: const [
@@ -93,7 +101,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class MySwitch extends StatelessWidget {
+class SwitchState extends StatefulWidget {
+  const SwitchState(this.socket, {Key? key}) : super(key: key);
+
+  final IO.Socket socket;
+  @override
+  State<SwitchState> createState() => MySwitch(socket);
+}
+class MySwitch extends State<SwitchState> {
+  MySwitch(this.socket);
+
+  IO.Socket socket;
+  
   @override
   Widget build(BuildContext context) {
     final switchModel = Provider.of<SwitchModel>(context);
@@ -106,6 +125,7 @@ class MySwitch extends StatelessWidget {
             value: switchModel.value,
             onChanged: (bool value) {
               switchModel.value = value;
+              socket.emit('switch', value);
             },
             activeColor: Theme.of(context).primaryColor,
           ),

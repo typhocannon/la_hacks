@@ -17,6 +17,6 @@ class SocketIOClient {
       print('Received message: $data');
     });
 
-    socket.emit('Message', {'data': 'hello'});
+    socket.emit('Status', {'data': 'hello'});
   }
 }
